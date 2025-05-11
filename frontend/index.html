@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Carbon Footprint Tracker</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React CDNs -->
+    <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
+    <!-- Babel for JSX -->
+    <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.22.5/babel.min.js"></script>
+    <!-- Radix UI Primitives for shadcn (used by Select) -->
+    <script src="https://cdn.jsdelivr.net/npm/@radix-ui/react-select@2.0.0/dist/index.umd.js"></script>
+    <!-- Chart.js for Visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --background: 0 0% 100%;
+            --foreground: 222.2 47.4% 11.2%;
+            --card: 0 0% 100%;
+            --card-foreground: 222.2 47.4% 11.2%;
+            --primary: 221.2 83.2% 53.3%;
+            --primary-foreground: 210 40% 98%;
+            --secondary: 210 40% 96.1%;
+            --secondary-foreground: 222.2 47.4% 11.2%;
+            --accent: 210 40% 96.1%;
+            --accent-foreground: 222.2 47.4% 11.2%;
+            --destructive: 0 84.2% 60.2%;
+            --destructive-foreground: 210 40% 98%;
+            --border: 214.3 31.8% 91.4%;
+            --input: 214.3 31.8% 91.4%;
+            --ring: 221.2 83.2% 53.3%;
+            --border-gradient-start: 221.2 83.2% 53.3%;
+            --border-gradient-end: 221.2 83.2% 73.3%;
+        }
+
+        [data-theme="dark"] {
+            --background: 222.2 47.4% 11.2%;
+            --foreground: 210 40% 98%;
+            --card: 222.2 47.4% 11.2%;
+            --card-foreground: 210 40% 98%;
+            --primary: 217.2 91.2% 59.8%;
+            --primary-foreground: 222.2 47.4% 11.2%;
+            --secondary: 217.2 32.6% 17.5%;
+            --secondary-foreground: 210 40% 98%;
+            --accent: 217.2 32.6% 17.5%;
+            --accent-foreground: 210 40% 98%;
+            --destructive: 0 62.8% 30.6%;
+            --destructive-foreground: 210 40% 98%;
+            --border: 217.2 32.6% 17.5%;
+            --input: 217.2 32.6% 17.5%;
+            --ring: 217.2 91.2% 59.8%;
+        }
+
+        [data-color-theme="blue"] {
+            --primary: 221.2 83.2% 53.3%;
+            --ring: 221.2 83.2% 53.3%;
+            --border-gradient-start: 221.2 83.2% 53.3%;
+            --border-gradient-end: 221.2 83.2% 73.3%;
+        }
+
+        [data-color-theme="green"] {
+            --primary: 142 86% 45%;
+            --ring: 142 86% 45%;
+            --border-gradient-start: 142 86% 45%;
+            --border-gradient-end: 142 86% 65%;
+        }
+
+        [data-color-theme="purple"] {
+            --primary: 263 70% 50%;
+            --ring: 263 70% 50%;
+            --border-gradient-start: 263 70% 50%;
+            --border-gradient-end: 263 70% 70%;
+        }
+
+        [data-color-theme="none"] {
+            --primary: 221.2 83.2% 53.3%;
+            --ring: 221.2 83.2% 53.3%;
+        }
+
+        body {
+            background: hsl(var(--background));
+            color: hsl(var(--foreground));
+            transition: background 0.3s, color 0.3s;
+        }
+
+        #root {
+            border: 4.2px solid transparent;
+            border-image: linear-gradient(to bottom right, hsl(var(--border-gradient-start)), hsl(var(--border-gradient-end))) 1;
+            padding: 16px;
+            border-radius: 12px;
+            transition: border-image 0.3s, border 0.3s;
+        }
+
+        [data-color-theme="none"] #root {
+            border: none;
+            padding: 16px;
+            border-radius: 0;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto !important;
+        }
+
+        .theme-select {
+            padding: 8px 12px;
+            font-size: 14px;
+            width: auto;
+            min-width: 0;
+        }
+
+        .dark-mode-button,
+        .theme-select {
+            padding: 8px 12px;
+            font-size: 14px;
+            line-height: 1;
+            height: 36px;
+            box-sizing: border-box;
+        }
+
+        .dark-mode-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+    <div id="root" class="w-full max-w-4xl"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // shadcn/ui-inspired Input Component
+        const Input = ({ id, type = "text", placeholder, value, onChange, className }) => (
+            <input
+                id={id}
+                type={type}
+                placeholder={placeholder}
+                value={value}
+                onChange={onChange}
+                className={`w-full px-4 py-2 rounded-md border border-[hsl(var(--input))] bg-[hsl(var(--background))] text-[hsl(var(--foreground))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring))] transition-all ${className}`}
+            />
+        );
+
+        // shadcn/ui-inspired Select Component
+        const Select = ({ id, value, onChange, children, className }) => (
+            <select
+                id={id}
+                value={value}
+                onChange={onChange}
+                className={`rounded-md border border-[hsl(var(--input))] bg-[hsl(var(--background))] text-[hsl(var(--foreground))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring))] transition-all ${className}`}
+            >
+                {children}
+            </select>
+        );
+
+        // shadcn/ui-inspired Button Component
+        const Button = ({ onClick, children, variant = "default", className }) => {
+            const variants = {
+                default: "bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--primary))/0.9]",
+                secondary: "bg-[hsl(var(--secondary))] text-[hsl(var(--secondary-foreground))] hover:bg-[hsl(var(--secondary))/0.8]",
+                destructive: "bg-[hsl(var(--destructive))] text-[hsl(var(--destructive-foreground))] hover:bg-[hsl(var(--destructive))/0.9]",
+            };
+            return (
+                <button
+                    onClick={onClick}
+                    className={`px-4 py-2 rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring))] focus:ring-offset-2 ${variants[variant]} ${className}`}
+                >
+                    {children}
+                </button>
+            );
+        };
+
+        // shadcn/ui-inspired Card Component
+        const Card = ({ children, className }) => (
+            <div className={`rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] shadow-lg p-6 ${className}`}>
+                {children}
+            </div>
+        );
+
+        const App = () => {
+            const [theme, setTheme] = useState("light");
+            const [colorTheme, setColorTheme] = useState("blue");
+            const [page, setPage] = useState("input");
+            const [week, setWeek] = useState("");
+            const [college, setCollege] = useState("");
+            const [transport, setTransport] = useState("");
+            const [fuel, setFuel] = useState("gasoline");
+            const [energy, setEnergy] = useState("");
+            const [diet, setDiet] = useState("moderate");
+            const [result, setResult] = useState(null);
+            const [history, setHistory] = useState(() => {
+                const savedHistory = localStorage.getItem("carbonFootprintHistory");
+                return savedHistory ? JSON.parse(savedHistory) : [];
+            });
+            const [error, setError] = useState("");
+            const [selectedWeek, setSelectedWeek] = useState("");
+            const [suggestions, setSuggestions] = useState([]);
+            const [trainingData, setTrainingData] = useState(null);
+            const [usedSuggestions, setUsedSuggestions] = useState(new Set());
+            const [loading, setLoading] = useState(true);
+            const [fetchError, setFetchError] = useState("");
+
+            // Fetch historical data and training data on mount with retry logic
+            useEffect(() => {
+                const fetchWithRetry = async (url, maxRetries = 3, delay = 2000) => {
+                    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                        try {
+                            const response = await fetch(url);
+                            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                            return await response.json();
+                        } catch (err) {
+                            if (attempt === maxRetries) throw err;
+                            console.warn(`Attempt ${attempt} failed for ${url}. Retrying in ${delay}ms...`);
+                            await new Promise(resolve => setTimeout(resolve, delay));
+                        }
+                    }
+                };
+
+                const fetchData = async () => {
+                    setLoading(true);
+                    setFetchError("");
+
+                    // Fetch historical data from MongoDB
+                    try {
+                        const historyData = await fetchWithRetry("http://localhost:5000/api/history");
+                        console.log("Fetched history data:", historyData);
+                        setHistory(historyData);
+                        localStorage.setItem("carbonFootprintHistory", JSON.stringify(historyData));
+                    } catch (err) {
+                        console.error("Error fetching historical data:", err);
+                        setFetchError(`Failed to fetch historical data: ${err.message}. You can still calculate your footprint, but history may not be available.`);
+                    }
+
+                    // Fetch training data for suggestions
+                    try {
+                        const trainingDataResponse = await fetchWithRetry("/suggestions_data.json");
+                        setTrainingData(trainingDataResponse);
+                    } catch (err) {
+                        console.error("Error fetching training data:", err);
+                        setTrainingData(null); // Suggestions won't work, but the app can proceed
+                    }
+
+                    setLoading(false);
+                };
+
+                fetchData();
+            }, []);
+
+            // Dark mode toggle handler
+            const toggleDarkMode = () => {
+                const newTheme = theme === "light" ? "dark" : "light";
+                setTheme(newTheme);
+                document.body.setAttribute("data-theme", newTheme);
+            };
+
+            // Color theme handler
+            const handleColorThemeChange = (value) => {
+                setColorTheme(value);
+                document.body.setAttribute("data-color-theme", value);
+            };
+
+            // Simplified carbon footprint estimation
+            const estimateCarbonFootprint = (transport, fuel, energy, diet, college) => {
+                const fuelFactors = { gasoline: 0.4, diesel: 0.45, electric: 0.15 };
+                const energyFactor = 0.5;
+                const dietFactors = { "meat-heavy": 2500, moderate: 1800, vegetarian: 1200, vegan: 800 };
+
+                const collegeEnergyAdjustments = {
+                    "College A": 0.9,
+                    "College B": 1.1,
+                    "College C": 1.0,
+                };
+                const adjustedEnergyFactor = energyFactor * (collegeEnergyAdjustments[college] || 1.0);
+
+                const transportEmissions = fuelFactors[fuel] * transport * 52;
+                const energyEmissions = adjustedEnergyFactor * energy * 12;
+                const dietEmissions = dietFactors[diet];
+
+                const total = transportEmissions + energyEmissions + dietEmissions;
+                return {
+                    total,
+                    breakdown: {
+                        transport: transportEmissions,
+                        energy: energyEmissions,
+                        diet: dietEmissions,
+                    },
+                };
+            };
+
+            // Generate suggestions based on training data
+            const fetchSuggestions = async (category, userTransport, userFuel, userEnergy, userDiet, userCollege) => {
+                if (!trainingData) {
+                    setSuggestions(["Suggestions are unavailable due to a data loading issue. Try reducing emissions in the highest category."]);
+                    return;
+                }
+
+                try {
+                    // Calculate similarity scores for each scenario
+                    const scores = trainingData.scenarios.map(scenario => {
+                        const inputs = scenario.inputs;
+                        let score = 0;
+
+                        // Adjust scoring for wider ranges by using logarithmic scaling for numerical inputs
+                        const transportDiff = Math.abs(inputs.transport - userTransport);
+                        const energyDiff = Math.abs(inputs.energy - userEnergy);
+                        const maxTransport = Math.max(inputs.transport, userTransport, 1); // Avoid division by zero
+                        const maxEnergy = Math.max(inputs.energy, userEnergy, 1);
+
+                        // Logarithmic scaling to handle large differences (tens, hundreds, thousands)
+                        score += (1 - (Math.log10(transportDiff + 1) / Math.log10(maxTransport + 1))) * 40; // Weight: 40%
+                        score += (1 - (Math.log10(energyDiff + 1) / Math.log10(maxEnergy + 1))) * 30; // Weight: 30%
+
+                        // Categorical comparisons (fuel, diet, college)
+                        score += (inputs.fuel === userFuel ? 10 : 0); // Weight: 10%
+                        score += (inputs.diet === userDiet ? 10 : 0); // Weight: 10%
+                        score += (inputs.college === userCollege ? 10 : 0); // Weight: 10%
+
+                        return { score, scenario };
+                    });
+
+                    // Sort by score and pick the best match
+                    scores.sort((a, b) => b.score - a.score);
+                    const bestMatch = scores[0].scenario;
+
+                    let userSuggestions = [];
+
+                    // Helper function to pick a suggestion that hasn't been used
+                    const pickUniqueSuggestion = (suggestionsArray) => {
+                        const available = suggestionsArray.filter(s => !usedSuggestions.has(s));
+                        if (available.length === 0) {
+                            // If all suggestions have been used, reset the usedSuggestions set
+                            setUsedSuggestions(new Set());
+                            return suggestionsArray[Math.floor(Math.random() * suggestionsArray.length)];
+                        }
+                        const suggestion = available[Math.floor(Math.random() * available.length)];
+                        setUsedSuggestions(prev => new Set(prev).add(suggestion));
+                        return suggestion;
+                    };
+
+                    // Helper function to personalize a suggestion
+                    const personalizeSuggestion = (suggestion) => {
+                        let personalized = suggestion;
+                        if (category === "transport" && personalized.includes("vehicle")) {
+                            personalized = personalized.replace("vehicle", `${userFuel} vehicle`);
+                        }
+                        if (personalized.includes("College")) {
+                            personalized = personalized.replace(/College [A-C]/g, userCollege);
+                        }
+                        // Add range-specific personalization
+                        if (category === "transport") {
+                            if (userTransport < 50) {
+                                personalized = `[Low Mileage] ${personalized}`;
+                            } else if (userTransport >= 1000) {
+                                personalized = `[High Mileage] ${personalized}`;
+                            }
+                        }
+                        if (category === "energy") {
+                            if (userEnergy < 100) {
+                                personalized = `[Low Energy Use] ${personalized}`;
+                            } else if (userEnergy >= 3000) {
+                                personalized = `[High Energy Use] ${personalized}`;
+                            }
+                        }
+                        return personalized;
+                    };
+
+                    // Pick suggestions based on the highest emission category
+                    if (category === "transport") {
+                        const suggestion = pickUniqueSuggestion(bestMatch.suggestions.transport);
+                        userSuggestions.push(personalizeSuggestion(suggestion));
+                        const secondaryCategory = userEnergy > 400 ? "energy" : "diet";
+                        const secondarySuggestion = pickUniqueSuggestion(bestMatch.suggestions[secondaryCategory]);
+                        userSuggestions.push(personalizeSuggestion(secondarySuggestion));
+                    } else if (category === "energy") {
+                        const suggestion = pickUniqueSuggestion(bestMatch.suggestions.energy);
+                        userSuggestions.push(personalizeSuggestion(suggestion));
+                        const secondaryCategory = userTransport > 100 ? "transport" : "diet";
+                        const secondarySuggestion = pickUniqueSuggestion(bestMatch.suggestions[secondaryCategory]);
+                        userSuggestions.push(personalizeSuggestion(secondarySuggestion));
+                    } else if (category === "diet") {
+                        const suggestion = pickUniqueSuggestion(bestMatch.suggestions.diet);
+                        userSuggestions.push(personalizeSuggestion(suggestion));
+                        const secondaryCategory = userEnergy > 400 ? "energy" : "transport";
+                        const secondarySuggestion = pickUniqueSuggestion(bestMatch.suggestions[secondaryCategory]);
+                        userSuggestions.push(personalizeSuggestion(secondarySuggestion));
+                    }
+
+                    if (userSuggestions.length < 2) {
+                        const genericSuggestions = [
+                            `Keep tracking your emissions at ${userCollege} to identify more opportunities.`,
+                            "Share your carbon footprint results with friends to raise awareness."
+                        ];
+                        const generic = pickUniqueSuggestion(genericSuggestions);
+                        userSuggestions.push(generic);
+                    }
+
+                    setSuggestions(userSuggestions.slice(0, 2));
+                } catch (err) {
+                    console.error("Error generating suggestions:", err);
+                    setSuggestions(["Failed to generate suggestions. Try reducing emissions in the highest category."]);
+                }
+            };
+
+            // Form submission handler
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                setError("");
+                setSuggestions([]);
+
+                if (loading) {
+                    setError("Please wait, data is still loading...");
+                    return;
+                }
+
+                if (!week || !college || !transport || !energy) {
+                    setError("Please fill in all fields.");
+                    return;
+                }
+                if (week < 1 || transport < 0 || energy < 0) {
+                    setError("Week must be >= 1, Transport and Energy must be >= 0.");
+                    return;
+                }
+
+                const duplicate = history.find(entry => entry.week === parseInt(week) && entry.college === college);
+                if (duplicate) {
+                    setError(`An entry for Week ${week} from ${college} already exists.`);
+                    return;
+                }
+
+                const emissions = estimateCarbonFootprint(
+                    parseFloat(transport),
+                    fuel,
+                    parseFloat(energy),
+                    diet,
+                    college
+                );
+
+                const maxCategory = Object.keys(emissions.breakdown).reduce((a, b) =>
+                    emissions.breakdown[a] > emissions.breakdown[b] ? a : b
+                );
+
+                // Fetch frontend suggestions
+                fetchSuggestions(maxCategory, parseFloat(transport), fuel, parseFloat(energy), diet, college);
+
+                const entry = {
+                    week: parseInt(week),
+                    college,
+                    transport: parseFloat(transport),
+                    fuel,
+                    energy: parseFloat(energy),
+                    diet,
+                    emissions,
+                    suggestions: suggestions, // Include frontend suggestions in the request
+                };
+
+                fetch("http://localhost:5000/api/calculate", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(entry),
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        setResult(data);
+                        setSuggestions(data.suggestions); // Use combined suggestions from backend
+                        setHistory([...history, { ...entry, suggestions: data.suggestions }]);
+                        setPage("result");
+                    })
+                    .catch(err => {
+                        console.error("Error saving entry:", err);
+                        setError("Failed to save entry. Please try again.");
+                    });
+            };
+
+            const handleVisualize = () => {
+                setPage("visualization");
+            };
+
+            // Render Input Page
+            if (page === "input") {
+                if (loading) {
+                    return (
+                        <div className="text-center">
+                            <h1 className="text-3xl font-bold mb-4">AI-Powered Carbon Footprint Tracker</h1>
+                            <p>Loading data, please wait...</p>
+                        </div>
+                    );
+                }
+
+                return (
+                    <div className="space-y-6">
+                        <div className="flex justify-between items-center">
+                            <h1 className="text-3xl font-bold">AI-Powered Carbon Footprint Tracker</h1>
+                            <div className="flex space-x-2">
+                                <Select
+                                    value={colorTheme}
+                                    onChange={(e) => handleColorThemeChange(e.target.value)}
+                                    className="theme-select"
+                                >
+                                    <option value="blue">Blue</option>
+                                    <option value="green">Green</option>
+                                    <option value="purple">Purple</option>
+                                    <option value="none">None</option>
+                                </Select>
+                                <Button onClick={toggleDarkMode} variant="secondary" className="dark-mode-button">
+                                    {theme === "light" ? "Dark Mode" : "Light Mode"}
+                                </Button>
+                            </div>
+                        </div>
+                        {fetchError && (
+                            <p className="text-[hsl(var(--destructive))] text-sm">{fetchError}</p>
+                        )}
+                        <Card>
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                                <div>
+                                    <label htmlFor="week" className="block text-sm font-medium mb-1">
+                                        Week Number
+                                    </label>
+                                    <Input
+                                        id="week"
+                                        type="number"
+                                        placeholder="Enter week number"
+                                        value={week}
+                                        onChange={(e) => setWeek(e.target.value)}
+                                    />
+                                </div>
+                                <div>
+                                    <label htmlFor="college" className="block text-sm font-medium mb-1">
+                                        College
+                                    </label>
+                                    <Select id="college" value={college} onChange={(e) => setCollege(e.target.value)}>
+                                        <option value="">Select your college</option>
+                                        <option value="College A">College A</option>
+                                        <option value="College B">College B</option>
+                                        <option value="College C">College C</option>
+                                    </Select>
+                                </div>
+                                <div>
+                                    <label htmlFor="transport" className="block text-sm font-medium mb-1">
+                                        Weekly Transportation (miles driven)
+                                    </label>
+                                    <Input
+                                        id="transport"
+                                        type="number"
+                                        placeholder="Enter miles driven per week"
+                                        value={transport}
+                                        onChange={(e) => setTransport(e.target.value)}
+                                    />
+                                </div>
+                                <div>
+                                    <label htmlFor="fuel" className="block text-sm font-medium mb-1">
+                                        Vehicle Fuel Type
+                                    </label>
+                                    <Select id="fuel" value={fuel} onChange={(e) => setFuel(e.target.value)}>
+                                        <option value="gasoline">Gasoline</option>
+                                        <option value="diesel">Diesel</option>
+                                        <option value="electric">Electric</option>
+                                    </Select>
+                                </div>
+                                <div>
+                                    <label htmlFor="energy" className="block text-sm font-medium mb-1">
+                                        Monthly Electricity Usage (kWh)
+                                    </label>
+                                    <Input
+                                        id="energy"
+                                        type="number"
+                                        placeholder="Enter monthly kWh"
+                                        value={energy}
+                                        onChange={(e) => setEnergy(e.target.value)}
+                                    />
+                                </div>
+                                <div>
+                                    <label htmlFor="diet" className="block text-sm font-medium mb-1">
+                                        Diet Type
+                                    </label>
+                                    <Select id="diet" value={diet} onChange={(e) => setDiet(e.target.value)}>
+                                        <option value="meat-heavy">Meat-Heavy</option>
+                                        <option value="moderate">Moderate</option>
+                                        <option value="vegetarian">Vegetarian</option>
+                                        <option value="vegan">Vegan</option>
+                                    </Select>
+                                </div>
+                                {error && (
+                                    <p className="text-[hsl(var(--destructive))] text-sm">{error}</p>
+                                )}
+                                <Button type="submit">Calculate Footprint</Button>
+                            </form>
+                        </Card>
+                        <Card>
+                            <h2 className="text-xl font-semibold mb-4">Previous Weeks</h2>
+                            {history.length > 0 ? (
+                                <ul className="space-y-2">
+                                    {history.map((entry, index) => (
+                                        <li key={index}>
+                                            Week {entry.week} ({entry.college}): {entry.transport} miles ({entry.fuel}), {entry.energy} kWh, {entry.diet} diet
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p>No previous entries.</p>
+                            )}
+                        </Card>
+                    </div>
+                );
+            }
+
+            // Render Result Page
+            if (page === "result") {
+                const usAverage = 16000;
+                const globalAverage = 4900;
+
+                return (
+                    <div className="space-y-6">
+                        <h1 className="text-3xl font-bold">Your Carbon Footprint</h1>
+                        <Card>
+                            <p className="text-lg">
+                                Estimated Annual Footprint: {(result.totalEmissions / 1000).toFixed(2)} metric tons of CO2
+                            </p>
+                            <p className="mt-2">
+                                <strong>Breakdown:</strong>
+                            </p>
+                            <ul className="list-disc list-inside">
+                                <li>Transport: {(result.breakdown.transport / 1000).toFixed(2)} metric tons</li>
+                                <li>Energy: {(result.breakdown.energy / 1000).toFixed(2)} metric tons</li>
+                                <li>Diet: {(result.breakdown.diet / 1000).toFixed(2)} metric tons</li>
+                            </ul>
+                            <p className="mt-4">
+                                <strong>Comparison:</strong>
+                            </p>
+                            <p>U.S. Average: {usAverage / 1000} metric tons per person</p>
+                            <p>Global Average: {globalAverage / 1000} metric tons per person</p>
+                            {suggestions.length > 0 && (
+                                <>
+                                    <p className="mt-4">
+                                        <strong>AI Suggestions to Reduce Footprint:</strong>
+                                    </p>
+                                    <ul className="list-disc list-inside">
+                                        {suggestions.map((suggestion, index) => (
+                                            <li key={index}>{suggestion}</li>
+                                        ))}
+                                    </ul>
+                                </>
+                            )}
+                            <div className="mt-6 flex space-x-4">
+                                <Button onClick={handleVisualize}>View Visualization</Button>
+                                <Button onClick={() => setPage("input")} variant="secondary">
+                                    Go Back to Input
+                                </Button>
+                            </div>
+                        </Card>
+                    </div>
+                );
+            }
+
+            // Render Visualization Page
+            if (page === "visualization") {
+                return (
+                    <div className="space-y-6">
+                        <h1 className="text-3xl font-bold">Footprint Visualization</h1>
+                        <Card>
+                            <div className="mb-4">
+                                <label htmlFor="visualization-week" className="block text-sm font-medium mb-1">
+                                    Select Week to Visualize
+                                </label>
+                                <Select
+                                    id="visualization-week"
+                                    value={selectedWeek}
+                                    onChange={(e) => setSelectedWeek(e.target.value)}
+                                >
+                                    <option value="">Select a week</option>
+                                    {history.map((entry, index) => (
+                                        <option key={index} value={entry.week}>
+                                            Week {entry.week} ({entry.college})
+                                        </option>
+                                    ))}
+                                </Select>
+                            </div>
+                            {selectedWeek && (() => {
+                                const entry = history.find(e => e.week === parseInt(selectedWeek));
+                                if (!entry) return <p>No data for selected week.</p>;
+
+                                setTimeout(() => {
+                                    const pieCtx = document.getElementById("pieChart").getContext("2d");
+                                    new Chart(pieCtx, {
+                                        type: "pie",
+                                        data: {
+                                            labels: ["Transport", "Energy", "Diet"],
+                                            datasets: [{
+                                                data: [
+                                                    entry.emissions.breakdown.transport,
+                                                    entry.emissions.breakdown.energy,
+                                                    entry.emissions.breakdown.diet,
+                                                ],
+                                                backgroundColor: ["#3b82f6", "#10b981", "#f59e0b"],
+                                            }],
+                                        },
+                                        options: {
+                                            responsive: true,
+                                            maintainAspectRatio: false,
+                                            plugins: {
+                                                legend: { position: "top" },
+                                                title: { display: true, text: "Emission Breakdown (kg CO2e)" },
+                                            },
+                                        },
+                                    });
+
+                                    const lineCtx = document.getElementById("lineChart").getContext("2d");
+                                    const weeks = history.map(e => `Week ${e.week} (${e.college})`);
+                                    const totals = history.map(e => e.emissions.total / 1000);
+                                    new Chart(lineCtx, {
+                                        type: "line",
+                                        data: {
+                                            labels: weeks,
+                                            datasets: [{
+                                                label: "Total Footprint (metric tons)",
+                                                data: totals,
+                                                borderColor: "#3b82f6",
+                                                fill: false,
+                                            }],
+                                        },
+                                        options: {
+                                            responsive: true,
+                                            maintainAspectRatio: false,
+                                            plugins: {
+                                                legend: { position: "top" },
+                                                title: { display: true, text: "Footprint Trend Over Weeks" },
+                                            },
+                                            scales: {
+                                                y: { beginAtZero: true, title: { display: true, text: "Metric Tons CO2e" } },
+                                            },
+                                        },
+                                    });
+                                }, 0);
+
+                                return (
+                                    <div className="space-y-8">
+                                        <div className="w-full max-w-md mx-auto" style={{ height: "300px" }}>
+                                            <canvas id="pieChart"></canvas>
+                                        </div>
+                                        <div className="w-full max-w-md mx-auto" style={{ height: "300px" }}>
+                                            <canvas id="lineChart"></canvas>
+                                        </div>
+                                        <Button onClick={() => setPage("result")} variant="secondary">
+                                            Back to Results
+                                        </Button>
+                                    </div>
+                                );
+                            })()}
+                        </Card>
+                    </div>
+                );
+            }
+
+            return null;
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById("root"));
+        root.render(<App />);
+    </script>
+</body>
+</html>
