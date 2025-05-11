@@ -1,0 +1,396 @@
+{
+    "scenarios": [
+        {
+            "inputs": {
+                "transport": 150,
+                "fuel": "gasoline",
+                "energy": 300,
+                "diet": "meat-heavy",
+                "college": "College A"
+            },
+            "suggestions": {
+                "transport": [
+                    "Carpool with friends to reduce gasoline usage.",
+                    "Switch to public transportation for daily commutes.",
+                    "Consider a hybrid vehicle to lower emissions."
+                ],
+                "energy": [
+                    "Use energy-efficient appliances to reduce electricity usage.",
+                    "Turn off lights when leaving rooms at College A."
+                ],
+                "diet": [
+                    "Try 'Meatless Mondays' to cut down on meat consumption.",
+                    "Switch to plant-based proteins like lentils or tofu."
+                ]
+            }
+        },
+        {
+            "inputs": {
+                "transport": 50,
+                "fuel": "electric",
+                "energy": 600,
+                "diet": "vegan",
+                "college": "College B"
+            },
+            "suggestions": {
+                "transport": [
+                    "Charge your electric vehicle using solar power.",
+                    "Drive efficiently to maximize battery range."
+                ],
+                "energy": [
+                    "Install a programmable thermostat to save energy.",
+                    "Advocate for renewable energy adoption at College B."
+                ],
+                "diet": [
+                    "Source vegan foods locally to reduce transport emissions.",
+                    "Grow your own herbs to minimize food miles."
+                ]
+            }
+        },
+        {
+            "inputs": {
+                "transport": 200,
+                "fuel": "diesel",
+                "energy": 100,
+                "diet": "moderate",
+                "college": "College C"
+            },
+            "suggestions": {
+                "transport": [
+                    "Use biodiesel blends to lower diesel emissions.",
+                    "Combine errands to reduce driving distance."
+                ],
+                "energy": [
+                    "Turn off electronics when not in use at College C.",
+                    "Use LED bulbs to save energy."
+                ],
+                "diet": [
+                    "Reduce red meat consumption to lower your footprint.",
+                    "Buy from local farmers' markets for fresher food."
+                ]
+            }
+        },
+        {
+            "inputs": {
+                "transport": 10,
+                "fuel": "gasoline",
+                "energy": 200,
+                "diet": "vegetarian",
+                "college": "College A"
+            },
+            "suggestions": {
+                "transport": [
+                    "Great job on low mileage! Keep using low-emission transport.",
+                    "Consider walking or biking for short trips."
+                ],
+                "energy": [
+                    "Unplug devices to avoid phantom energy loads.",
+                    "Join College A's sustainability initiatives."
+                ],
+                "diet": [
+                    "Focus on seasonal vegetables to reduce emissions.",
+                    "Avoid processed vegetarian foods with high packaging."
+                ]
+            }
+        },
+        {
+            "inputs": {
+                "transport": 80,
+                "fuel": "electric",
+                "energy": 400,
+                "diet": "meat-heavy",
+                "college": "College B"
+            },
+            "suggestions": {
+                "transport": [
+                    "Charge your vehicle with renewable energy sources.",
+                    "Support EV charging stations at College B."
+                ],
+                "energy": [
+                    "Insulate your living space to reduce energy loss.",
+                    "Turn off appliances in College B dorms when not in use."
+                ],
+                "diet": [
+                    "Cut down on beef, which has a high carbon footprint.",
+                    "Incorporate more plant-based meals weekly."
+                ]
+            }
+        },
+        {
+            "inputs": {
+                "transport": 300,
+                "fuel": "diesel",
+                "energy": 50,
+                "diet": "vegan",
+                "college": "College C"
+            },
+            "suggestions": {
+                "transport": [
+                    "Switch to an electric vehicle to reduce diesel emissions.",
+                    "Plan routes to minimize unnecessary driving."
+                ],
+                "energy": [
+                    "Excellent low energy usage! Share tips with College C peers.",
+                    "Consider microgeneration like solar panels."
+                ],
+                "diet": [
+                    "Continue your vegan diet—source foods locally.",
+                    "Support vegan-friendly initiatives at College C."
+                ]
+            }
+        },
+        {
+            "inputs": {
+                "transport": 120,
+                "fuel": "gasoline",
+                "energy": 500,
+                "diet": "moderate",
+                "college": "College A"
+            },
+            "suggestions": {
+                "transport": [
+                    "Use public transit to reduce gasoline consumption.",
+                    "Carpool to lower your transport emissions."
+                ],
+                "energy": [
+                    "Switch to a green energy provider for renewable power.",
+                    "Participate in College A's energy-saving programs."
+                ],
+                "diet": [
+                    "Incorporate more vegetables into your diet.",
+                    "Reduce processed food intake to lower emissions."
+                ]
+            }
+        },
+        {
+            "inputs": {
+                "transport": 20,
+                "fuel": "electric",
+                "energy": 150,
+                "diet": "vegetarian",
+                "college": "College B"
+            },
+            "suggestions": {
+                "transport": [
+                    "Great job! Continue using your electric vehicle efficiently.",
+                    "Encourage EV adoption among College B peers."
+                ],
+                "energy": [
+                    "Use power strips to turn off devices easily.",
+                    "Advocate for energy audits at College B."
+                ],
+                "diet": [
+                    "Choose locally grown vegetables to reduce impact.",
+                    "Minimize food waste to keep emissions low."
+                ]
+            }
+        },
+        {
+            "inputs": {
+                "transport": 5,
+                "fuel": "gasoline",
+                "energy": 30,
+                "diet": "moderate",
+                "college": "College A"
+            },
+            "suggestions": {
+                "transport": [
+                    "Excellent! Your low mileage is great—try walking or biking instead.",
+                    "Use a bike-sharing program for short trips around College A."
+                ],
+                "energy": [
+                    "Great job on low energy use! Unplug chargers when not in use.",
+                    "Switch to energy-efficient lighting like LEDs at College A."
+                ],
+                "diet": [
+                    "Reduce food waste by meal planning.",
+                    "Opt for unpackaged produce to lower your footprint."
+                ]
+            }
+        },
+        {
+            "inputs": {
+                "transport": 15,
+                "fuel": "electric",
+                "energy": 80,
+                "diet": "vegan",
+                "college": "College B"
+            },
+            "suggestions": {
+                "transport": [
+                    "Keep up the great work with your electric vehicle! Charge off-peak.",
+                    "Promote EV awareness at College B events."
+                ],
+                "energy": [
+                    "Use energy-saving settings on devices to maintain low usage.",
+                    "Join College B’s green energy initiatives."
+                ],
+                "diet": [
+                    "Maintain your vegan diet by choosing local, organic produce.",
+                    "Compost food scraps to reduce waste."
+                ]
+            }
+        },
+        {
+            "inputs": {
+                "transport": 40,
+                "fuel": "diesel",
+                "energy": 90,
+                "diet": "vegetarian",
+                "college": "College C"
+            },
+            "suggestions": {
+                "transport": [
+                    "Consider switching to a hybrid vehicle to cut diesel emissions.",
+                    "Use a ride-sharing app for trips around College C."
+                ],
+                "energy": [
+                    "Turn off heating when not needed to save energy.",
+                    "Encourage College C to adopt energy-saving policies."
+                ],
+                "diet": [
+                    "Stick to seasonal, local vegetables to keep emissions low.",
+                    "Avoid imported vegetarian products with high transport costs."
+                ]
+            }
+        },
+        {
+            "inputs": {
+                "transport": 500,
+                "fuel": "gasoline",
+                "energy": 1200,
+                "diet": "meat-heavy",
+                "college": "College A"
+            },
+            "suggestions": {
+                "transport": [
+                    "Significantly reduce driving by using public transit or carpooling.",
+                    "Switch to a fuel-efficient or hybrid vehicle to lower emissions."
+                ],
+                "energy": [
+                    "Invest in a home energy audit to identify high usage areas.",
+                    "Switch to 100% renewable energy plans at College A."
+                ],
+                "diet": [
+                    "Cut beef consumption in half to drastically reduce emissions.",
+                    "Switch to plant-based meals for most of the week."
+                ]
+            }
+        },
+        {
+            "inputs": {
+                "transport": 800,
+                "fuel": "diesel",
+                "energy": 1500,
+                "diet": "moderate",
+                "college": "College B"
+            },
+            "suggestions": {
+                "transport": [
+                    "Switch to an electric vehicle or use biodiesel to cut emissions.",
+                    "Work remotely when possible to reduce driving."
+                ],
+                "energy": [
+                    "Install solar panels to offset high electricity usage.",
+                    "Implement smart home systems to monitor energy at College B."
+                ],
+                "diet": [
+                    "Limit meat to once a week to lower your diet’s footprint.",
+                    "Source food from local, sustainable farms."
+                ]
+            }
+        },
+        {
+            "inputs": {
+                "transport": 600,
+                "fuel": "electric",
+                "energy": 900,
+                "diet": "vegan",
+                "college": "College C"
+            },
+            "suggestions": {
+                "transport": [
+                    "Optimize routes to reduce electric vehicle mileage.",
+                    "Charge during off-peak hours using renewable energy sources."
+                ],
+                "energy": [
+                    "Switch to energy-efficient HVAC systems to lower usage.",
+                    "Promote energy conservation campaigns at College C."
+                ],
+                "diet": [
+                    "Maintain your vegan diet—focus on bulk buying to reduce packaging.",
+                    "Support local vegan food suppliers to cut transport emissions."
+                ]
+            }
+        },
+        {
+            "inputs": {
+                "transport": 2000,
+                "fuel": "gasoline",
+                "energy": 3000,
+                "diet": "meat-heavy",
+                "college": "College A"
+            },
+            "suggestions": {
+                "transport": [
+                    "Drastically cut driving—use trains or buses for long distances.",
+                    "Transition to an electric vehicle immediately to slash emissions."
+                ],
+                "energy": [
+                    "Install a full solar panel system to cover high energy needs.",
+                    "Conduct a campus-wide energy audit at College A to reduce usage."
+                ],
+                "diet": [
+                    "Switch to a fully plant-based diet to eliminate meat emissions.",
+                    "Join or start a sustainable food program at College A."
+                ]
+            }
+        },
+        {
+            "inputs": {
+                "transport": 1500,
+                "fuel": "diesel",
+                "energy": 5000,
+                "diet": "moderate",
+                "college": "College B"
+            },
+            "suggestions": {
+                "transport": [
+                    "Replace diesel with electric vehicles for all long trips.",
+                    "Use flight alternatives like trains for long-distance travel."
+                ],
+                "energy": [
+                    "Invest in large-scale renewable energy solutions like wind or solar.",
+                    "Implement energy monitoring systems across College B."
+                ],
+                "diet": [
+                    "Eliminate red meat entirely to cut dietary emissions.",
+                    "Support College B’s initiatives for sustainable dining halls."
+                ]
+            }
+        },
+        {
+            "inputs": {
+                "transport": 1000,
+                "fuel": "electric",
+                "energy": 4000,
+                "diet": "vegetarian",
+                "college": "College C"
+            },
+            "suggestions": {
+                "transport": [
+                    "Reduce long-distance trips by using virtual meetings.",
+                    "Advocate for more EV infrastructure at College C."
+                ],
+                "energy": [
+                    "Offset high usage with a combination of solar and wind energy.",
+                    "Lead a College C initiative for campus-wide energy reduction."
+                ],
+                "diet": [
+                    "Minimize food waste by composting and planning meals.",
+                    "Choose local, organic produce to keep emissions low."
+                ]
+            }
+        }
+    ]
+}
